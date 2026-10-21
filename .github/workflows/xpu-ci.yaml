@@ -99,6 +99,8 @@ jobs:
 
           docker build \
             --progress=plain \
+            --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
+            --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
             --tag "${IMAGE_TAG}" \
             -f ./container/rendered.Dockerfile \
             . 2>&1 | tee build-xpu.log
@@ -119,6 +121,8 @@ jobs:
 
           docker build \
             --progress=plain \
+            --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
+            --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
             --target test_image \
             --tag "${TEST_IMAGE_TAG}" \
             -f container/Dockerfile.test \
