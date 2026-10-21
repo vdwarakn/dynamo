@@ -203,6 +203,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Collect XPU diagnostics
         if: always()
@@ -299,6 +300,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Cleanup Pytest Containers
         if: always()
@@ -347,6 +349,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Cleanup Pytest Containers
         if: always()
