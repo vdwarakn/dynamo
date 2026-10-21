@@ -175,6 +175,7 @@ runs:
           --shm-size=200m \
           --ulimit nofile=65536:65536 \
           --network host \
+          --add-host localhost:127.0.0.1 \
           --memory=6g \
           "${DOCKER_ENV_FLAGS[@]}" \
           ${COVERAGE_ENV} \
@@ -310,6 +311,7 @@ runs:
           "${DOCKER_EXTRA_FLAGS[@]}" \
           --rm -w /workspace \
           --network host \
+          --add-host localhost:127.0.0.1 \
           "${DOCKER_ENV_FLAGS[@]}" \
           --name ${{ env.CONTAINER_ID }}_pytest \
           -v "${TEST_RESULTS_DIR}:/workspace/test-results" \
