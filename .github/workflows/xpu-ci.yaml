@@ -84,6 +84,13 @@ jobs:
               --output-short-filename
           echo "::endgroup::"
 
+      # Fork-only: Intel proxy re-signs GitHub release-asset TLS; skip verification.
+      - name: Disable TLS verification for downloads
+        shell: bash
+        run: |
+          perl -pi -e 's/\bwget (?=-|"?https?:\/\/|"?\$)/wget --no-check-certificate /g; s/\bcurl (?=-)/curl -k /g' ./container/rendered.Dockerfile
+          grep -n -E 'no-check-certificate|curl -k' ./container/rendered.Dockerfile
+
 
       - name: Build XPU image
         id: build
