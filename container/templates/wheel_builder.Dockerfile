@@ -74,7 +74,7 @@ RUN wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRO
     echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | tee /etc/apt/sources.list.d/oneAPI.list
 
 # Fork-only: TLS verification skipped (proxy MITM); integrity kept via sha256.
-RUN curl -kfsSL --retry 5 -o /tmp/xpu-smi.deb https://github.com/intel/xpumanager/releases/download/v1.3.6/xpu-smi_1.3.6_20260206.143628.1004f6cb.u24.04_amd64.deb && \
+RUN wget --no-check-certificate --tries=5 --waitretry=5 -q -O /tmp/xpu-smi.deb https://github.com/intel/xpumanager/releases/download/v1.3.6/xpu-smi_1.3.6_20260206.143628.1004f6cb.u24.04_amd64.deb && \
     echo "f60e802b6f41350393e34b24793db888a8be514054769bd17e7a6e9c0c058b87  /tmp/xpu-smi.deb" | sha256sum -c -
 
 # Install xpu-smi without explicitly changing the Intel compute runtime stack.
