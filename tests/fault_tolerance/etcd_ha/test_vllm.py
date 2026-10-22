@@ -121,6 +121,11 @@ class DynamoWorkerProcess(ManagedProcess):
             self.nixl_side_channel_port = allocate_port(DynamoPortRange.NIXL.value)
             env["VLLM_NIXL_SIDE_CHANNEL_PORT"] = str(self.nixl_side_channel_port)
 
+        # Each worker publishes forward-pass metrics on its own port; unset means
+        # the host-wide default 20380, which collides when prefill and decode share a host.
+        self.fpm_port = allocate_port(DynamoPortRange.FPM.value)
+        env["DYN_FORWARDPASS_METRIC_PORT"] = str(self.fpm_port)
+
         # KV events config only for prefill worker
         if mode == WorkerMode.PREFILL:
             self.kv_event_port = allocate_port(DynamoPortRange.SERVE.value)
@@ -172,6 +177,7 @@ class DynamoWorkerProcess(ManagedProcess):
             "system_port",
             "kv_event_port",
             "nixl_side_channel_port",
+            "fpm_port",
         ):
             port = getattr(self, port_attr, None)
             if port is None:
