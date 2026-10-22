@@ -26,6 +26,11 @@ on:
         required: false
         type: string
         default: ''
+      pytest_keyword:
+        description: 'Optional pytest -k expression; when set, only test-xpu runs (fork-only)'
+        required: false
+        type: string
+        default: ''
   workflow_call:
     inputs:
       framework:
@@ -45,6 +50,11 @@ on:
         default: ''
       pytest_markers:
         description: 'Pytest marker expression for test selection'
+        required: false
+        type: string
+        default: ''
+      pytest_keyword:
+        description: 'Optional pytest -k expression; when set, only test-xpu runs (fork-only)'
         required: false
         type: string
         default: ''
@@ -148,7 +158,7 @@ jobs:
 
   test-xpu-gms:
     needs: [build-xpu]
-    if: ${{ !cancelled() && needs.build-xpu.result == 'success' && (inputs.framework || 'vllm') == 'vllm' }}
+    if: ${{ !cancelled() && needs.build-xpu.result == 'success' && (inputs.framework || 'vllm') == 'vllm' && inputs.pytest_keyword == '' }}
     runs-on: xpu
     env:
       FRAMEWORK: ${{ inputs.framework || 'vllm' }}
@@ -292,6 +302,7 @@ jobs:
         uses: $/.github/actions/pytest
         with:
           pytest_marks: '${{ inputs.pytest_markers }} and xpu_1'
+          pytest_keyword: ${{ inputs.pytest_keyword }}
           image_tag: ${{ env.TEST_IMAGE_TAG }}
           test_suite_name: 'xpu-${{ env.FRAMEWORK }}'
           test_type: 'e2e'
@@ -317,7 +328,7 @@ jobs:
 
   test-xpu-2card:
     needs: [build-xpu]
-    if: ${{ !cancelled() && needs.build-xpu.result == 'success' }}
+    if: ${{ !cancelled() && needs.build-xpu.result == 'success' && inputs.pytest_keyword == '' }}
     runs-on: xpu-2
     env:
       FRAMEWORK: ${{ inputs.framework || 'vllm' }}
