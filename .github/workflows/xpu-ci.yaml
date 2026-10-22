@@ -31,6 +31,11 @@ on:
         required: false
         type: string
         default: ''
+      models_dir:
+        description: 'Optional pre-populated HF cache for pytest --models-dir (offline, read-only) (fork-only)'
+        required: false
+        type: string
+        default: ''
   workflow_call:
     inputs:
       framework:
@@ -55,6 +60,11 @@ on:
         default: ''
       pytest_keyword:
         description: 'Optional pytest -k expression; when set, only test-xpu runs (fork-only)'
+        required: false
+        type: string
+        default: ''
+      models_dir:
+        description: 'Optional pre-populated HF cache for pytest --models-dir (offline, read-only) (fork-only)'
         required: false
         type: string
         default: ''
@@ -213,6 +223,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          models_dir: ${{ inputs.models_dir }}
           hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Collect XPU diagnostics
@@ -311,6 +322,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          models_dir: ${{ inputs.models_dir }}
           hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Cleanup Pytest Containers
@@ -360,6 +372,7 @@ jobs:
           parallel_mode: 'none'
           dind_as_sidecar: 'true'
           start_minio: 'false'
+          models_dir: ${{ inputs.models_dir }}
           hf_token: ${{ secrets.HF_TOKEN }}
 
       - name: Cleanup Pytest Containers
