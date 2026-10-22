@@ -33,6 +33,10 @@ from tests.utils.port_utils import allocate_port, deallocate_port
 
 logger = logging.getLogger(__name__)
 
+# Processes only detect a lost non-HA etcd when their lease expires (default
+# ETCD_LEASE_TTL is 30s), then need time to tear down; 30s alone races the TTL.
+NON_HA_SHUTDOWN_DEADLINE_SECS = 60
+
 pytestmark = [
     pytest.mark.fault_tolerance,
     pytest.mark.vllm,
@@ -405,7 +409,8 @@ def test_etcd_non_ha_shutdown_vllm_aggregated(request, predownload_models):
 
                     # Step 7: Wait and verify frontend and worker detect the loss
                     wait_for_processes_to_terminate(
-                        {"Worker": worker, "Frontend": frontend}
+                        {"Worker": worker, "Frontend": frontend},
+                        timeout=NON_HA_SHUTDOWN_DEADLINE_SECS,
                     )
 
 
@@ -481,7 +486,8 @@ def test_etcd_non_ha_shutdown_vllm_disaggregated(
                                 "Decode Worker": decode_worker,
                                 "Prefill Worker": prefill_worker,
                                 "Frontend": frontend,
-                            }
+                            },
+                            timeout=NON_HA_SHUTDOWN_DEADLINE_SECS,
                         )
 
 
