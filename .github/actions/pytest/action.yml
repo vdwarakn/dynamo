@@ -175,6 +175,7 @@ runs:
           --shm-size=200m \
           --ulimit nofile=65536:65536 \
           --network host \
+          -v /etc/ssl/certs:/etc/ssl/certs:ro \
           --memory=6g \
           "${DOCKER_ENV_FLAGS[@]}" \
           ${COVERAGE_ENV} \
@@ -310,6 +311,7 @@ runs:
           "${DOCKER_EXTRA_FLAGS[@]}" \
           --rm -w /workspace \
           --network host \
+          -v /etc/ssl/certs:/etc/ssl/certs:ro \
           "${DOCKER_ENV_FLAGS[@]}" \
           --name ${{ env.CONTAINER_ID }}_pytest \
           -v "${TEST_RESULTS_DIR}:/workspace/test-results" \
