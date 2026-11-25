@@ -84,6 +84,16 @@ jobs:
               --output-short-filename
           echo "::endgroup::"
 
+      # Trust the runner host's CA bundle in every build stage, so downloads through a
+      # TLS-inspecting proxy verify. Only the generated Dockerfile is changed.
+      - name: Use runner CA bundle in build stages
+        shell: bash
+        run: |
+          mkdir -p "${RUNNER_TEMP}/hostca"
+          cp /etc/ssl/certs/ca-certificates.crt "${RUNNER_TEMP}/hostca/ca-certificates.crt"
+          perl -pi -e 's{^(FROM\s+(?!scratch\b)\S.*)$}{$1\nCOPY --from=hostca ca-certificates.crt /etc/ssl/certs/ca-certificates.crt\nCOPY --from=hostca ca-certificates.crt /usr/local/share/ca-certificates/zz-runner-bundle.crt}' ./container/rendered.Dockerfile
+          grep -c -- '--from=hostca ca-certificates.crt /etc/ssl' ./container/rendered.Dockerfile
+
 
       - name: Build XPU image
         id: build
@@ -99,6 +109,7 @@ jobs:
 
           docker build \
             --progress=plain \
+            --build-context hostca="${RUNNER_TEMP}/hostca" \
             --tag "${IMAGE_TAG}" \
             -f ./container/rendered.Dockerfile \
             . 2>&1 | tee build-xpu.log
@@ -119,6 +130,7 @@ jobs:
 
           docker build \
             --progress=plain \
+            --build-context hostca="${RUNNER_TEMP}/hostca" \
             --target test_image \
             --tag "${TEST_IMAGE_TAG}" \
             -f container/Dockerfile.test \
